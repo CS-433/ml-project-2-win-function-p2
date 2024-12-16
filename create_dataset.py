@@ -30,7 +30,7 @@ def create_thorax_dataset(csv_path, image_folder, image_dim):
     data = pd.read_csv(csv_path).drop_duplicates()
     
     # Create directories
-    base_dir = os.path.dirname(csv_path)
+    base_dir = os.getcwd()
     os.makedirs(os.path.join(base_dir,'thorax_dataset/images/train'), exist_ok=True)
     os.makedirs(os.path.join(base_dir,'thorax_dataset/images/val'), exist_ok=True)
     os.makedirs(os.path.join(base_dir,'thorax_dataset/images/test'), exist_ok=True)
@@ -142,7 +142,7 @@ def create_thorax_and_scale_dataset(csv_path, image_folder, image_dim):
     data = pd.read_csv(csv_path).drop_duplicates()
     
     # Create directories
-    base_dir = os.path.dirname(csv_path)
+    base_dir = os.getcwd()
     os.makedirs(os.path.join(base_dir,'thorax_and_scale_dataset/images/train'), exist_ok=True)
     os.makedirs(os.path.join(base_dir,'thorax_and_scale_dataset/images/val'), exist_ok=True)
     os.makedirs(os.path.join(base_dir,'thorax_and_scale_dataset/images/test'), exist_ok=True)
@@ -191,8 +191,9 @@ def create_thorax_and_scale_dataset(csv_path, image_folder, image_dim):
         y1_bar_normalized = normalize(y1_bar, image_dim)
         x2_bar_normalized = normalize(x2_bar, image_dim)
         y2_bar_normalized = normalize(y2_bar, image_dim)
-
+        
         # Save annotation
+        #<class-index> <x> <y> <width> <height> <px1> <py1> <px2> <py2> ... <pxn> <pyn>
         annotation_lmk = f"0 {x_lmk_center} {y_lmk_center} {width_lmk} {height_lmk} {x1_normalized} {y1_normalized} {x2_normalized} {y2_normalized} 0 0 0 0\n"  # Assuming class id 0
         annotation_bar = f"1 {x_bar_center} {y_bar_center} {width_bar} {height_bar} {x1_bar_normalized} {y1_bar_normalized} {x2_bar_normalized} {y2_bar_normalized} 0 0 0 0\n" 
         annotation = [annotation_lmk, annotation_bar]
@@ -258,6 +259,114 @@ def create_thorax_and_scale_dataset(csv_path, image_folder, image_dim):
     print("Data preparation complete.")
     
     
+def create_scale_dataset(csv_path, image_folder, image_dim):
+    # Load the CSV file
+    
+    data = pd.read_csv(csv_path).drop_duplicates()
+    
+    # Create directories
+    base_dir = os.getcwd()
+    os.makedirs(os.path.join(base_dir,'scale_dataset/images/train'), exist_ok=True)
+    os.makedirs(os.path.join(base_dir,'scale_dataset/images/val'), exist_ok=True)
+    os.makedirs(os.path.join(base_dir,'scale_dataset/images/test'), exist_ok=True)
+    
+    os.makedirs(os.path.join(base_dir,'scale_dataset/labels/train'), exist_ok=True)
+    os.makedirs(os.path.join(base_dir,'scale_dataset/labels/val'), exist_ok=True)
+    os.makedirs(os.path.join(base_dir,'scale_dataset/labels/test'), exist_ok=True)
+
+
+    # Resize images and prepare annotations
+    image_paths = []
+    annotations = []
+
+    for i, row in data.iterrows():
+        img_name = row['ant']
+        x1, y1, x2, y2 = row['x1_bar'], row['y1_bar'], row['x2_bar'], row['y2_bar']
+        img_path = os.path.join(image_folder, img_name)
+        if not os.path.exists(img_path):
+            continue
+
+        # Open the image
+        img = Image.open(img_path)
+        original_width, original_height = img.size
+
+        # Resize the image
+        resized_img = img.resize((image_dim, image_dim), Image.Resampling.LANCZOS)
+
+        # Save the resized image
+        resized_img_path = os.path.join(base_dir, 'scale_dataset/images', img_name)
+        resized_img.save(resized_img_path)
+        
+        
+        # Normalize YOLO coordinates
+        x_center, y_center, width, height = normalize_yolo(
+            x1, y1, x2, y2, image_dim, image_dim
+        )
+
+        x1_normalized = normalize(x1, image_dim)
+        y1_normalized = normalize(y1, image_dim)
+        x2_normalized = normalize(x2, image_dim)
+        y2_normalized = normalize(y2, image_dim)
+
+        # Save annotation
+        annotation = f"0 {x_center} {y_center} {width} {height} {x1_normalized} {y1_normalized} {x2_normalized} {y2_normalized}\n"  # Assuming class id 0
+        annotations.append((img_name, annotation))
+
+    # print(annotations)
+    #create all splits train, val, test
+    train_files, val_test_files = train_test_split(annotations, test_size=0.4, random_state=42)
+    val_files, test_files = train_test_split(val_test_files, test_size=0.5, random_state=42)
+  
+    # Move images and create labels
+    #train 
+    for img_name, annotation in train_files:
+        base_name = os.path.splitext(img_name)[0]
+        original_img_path = os.path.join(base_dir, 'scale_dataset/images', img_name)
+        train_img_path = os.path.join(base_dir, 'scale_dataset/images/train', img_name)
+        if os.path.exists(original_img_path):
+            os.rename(original_img_path, train_img_path)
+            
+        label_path = os.path.join(base_dir, 'scale_dataset/labels/train', f'{base_name}.txt')
+        with open(label_path, 'w') as f:
+            f.write(annotation)
+    #val
+    for img_name, annotation in val_files:
+        base_name = os.path.splitext(img_name)[0]
+        original_img_path = os.path.join(base_dir, 'scale_dataset/images', img_name)
+        val_img_path = os.path.join(base_dir, 'scale_dataset/images/val', img_name)
+        if os.path.exists(original_img_path):
+            os.rename(original_img_path, val_img_path)
+        
+        label_path = os.path.join(base_dir, 'scale_dataset/labels/val', f'{base_name}.txt')
+        with open(label_path, 'w') as f:
+            f.write(annotation)
+            
+    #test
+    for img_name, annotation in test_files:
+        base_name = os.path.splitext(img_name)[0]
+        original_img_path = os.path.join(base_dir, 'scale_dataset/images', img_name)
+        test_img_path = os.path.join(base_dir, 'scale_dataset/images/test', img_name)
+        if os.path.exists(original_img_path):
+            os.rename(original_img_path, test_img_path)
+        
+        label_path = os.path.join(base_dir, 'scale_dataset/labels/test', f'{base_name}.txt')
+        with open(label_path, 'w') as f:
+            f.write(annotation)
+            
+    #create the asscoiated .yaml file for YOLO with correct train/val/test directories
+    yaml_path = os.path.join(base_dir, 'scale_dataset/dataset.yaml')
+    with open(yaml_path, 'w') as f:
+        f.write(f'train: {os.path.join(base_dir, "scale_dataset/images/train")}\n')
+        f.write(f'val: {os.path.join(base_dir, "scale_dataset/images/val")}\n')
+        f.write(f'test: {os.path.join(base_dir, "scale_dataset/images/test")}\n')
+        f.write('nc: 1\n')
+        f.write('names: ["scale"]\n')
+        f.write('keypoint_names: ["scale_start", "scale_end"]\n')
+        f.write('num_keypoints: 2\n')
+        f.write('kpt_shape: [2, 2]\n')
+    
+    print(f"Created dataset.yaml at: {yaml_path}")
+    print("Data preparation complete.")
     
 
 if __name__ == '__main__':
@@ -267,5 +376,5 @@ if __name__ == '__main__':
     
     # create_thorax_dataset(csv_path, image_folder, image_dim)
     create_thorax_and_scale_dataset(csv_path, image_folder, image_dim)
-
+    # create_scale_dataset(csv_path, image_folder, image_dim)
     
