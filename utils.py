@@ -2,7 +2,9 @@ import os
 import random
 from PIL import Image, ImageDraw, ImageFont
 from IPython.display import display
-
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
 
 def choose_random_file(directory, to_skip=set([])):
     # Get a list of all files in the directory
@@ -87,7 +89,6 @@ def visualize_single_pair_labels(image_path, label_path):
     # Show the image
     # image.show()
     display(image)
-    
 
 def visualize_double_pair_labels(image_path, label_path):
     # Load the image
@@ -225,3 +226,108 @@ def visualize_predictions(image_path, results):
     
     # Display the image
     display(image)
+
+import cv2
+import numpy as np
+
+def detect_black_scale_bar(image_path):
+    """
+    Assuming the image has dimension 640x640
+    Detects the scale bar in an image, assuming it is a black, straight line,
+    located at the bottom between pixel rows 550 and 640.
+
+    Parameters:
+        image_path (str): Path to the image file.
+        
+    Returns:
+        tuple: Start and end points of the scale bar ((x1, y1), (x2, y2)) or None if not found.
+    """
+    # Load the image and convert to grayscale
+    image = cv2.imread(image_path)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Focus on the region between pixel rows 550 and 640 where the scale bar is located
+    bottom_region = gray[550:640, :]
+
+    # Threshold to isolate black regions
+    _, binary = cv2.threshold(bottom_region, 50, 255, cv2.THRESH_BINARY_INV)
+
+    # Detect edges to emphasize potential scale bars
+    edges = cv2.Canny(binary, 50, 150)
+
+    # Use Hough Line Transform to detect straight lines
+    lines = cv2.HoughLinesP(edges, 1, np.pi / 180, threshold=100, minLineLength=50, maxLineGap=10)
+
+    if lines is not None:
+        for line in lines:
+            x1, y1, x2, y2 = line[0]
+            
+            # Adjust y-coordinates to match the original image's coordinate system
+            y1 += 550
+            y2 += 550
+            
+            # Check if the line is horizontal (y1 ≈ y2)
+            if abs(y2 - y1) < 5:
+                # Return the first valid horizontal line
+                return (x1, y1), (x2, y2)
+
+    return None  # Return None if no scale bar is found
+
+def draw_points_and_scale(image_path, scale_bar_points, thorax_points):
+    """
+    Draws the scale bar and thorax start/end points on the image.
+
+    Parameters:
+        image_path (str): Path to the image file.
+        scale_bar_points (tuple): Start and end points of the scale bar ((x1, y1), (x2, y2)).
+        thorax_points (tuple): Start and end points of the thorax ((x3, y3), (x4, y4)).
+        ALL POINTS MUST BE INTEGERS
+    """
+    # Load the image
+    image = cv2.imread(image_path)
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    # Draw the scale bar
+    if scale_bar_points:
+        (sx1, sy1), (sx2, sy2) = scale_bar_points
+        cv2.line(image_rgb, (sx1, sy1), (sx2, sy2), color=(0, 255, 0), thickness=2)
+        cv2.putText(image_rgb, "Scale Bar", (sx1, sy1 - 10), cv2.FONT_HERSHEY_SIMPLEX,
+                    0.6, (0, 255, 0), 1, cv2.LINE_AA)
+
+    # Draw the thorax start and end positions
+    if thorax_points:
+        (tx1, ty1), (tx2, ty2) = thorax_points
+        cv2.circle(image_rgb, (tx1, ty1), radius=5, color=(255, 0, 0), thickness=-1)
+        cv2.putText(image_rgb, "Thorax Start", (tx1 + 5, ty1 - 5), cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5, (255, 0, 0), 1, cv2.LINE_AA)
+
+        cv2.circle(image_rgb, (tx2, ty2), radius=5, color=(255, 0, 0), thickness=-1)
+        cv2.putText(image_rgb, "Thorax End", (tx2 + 5, ty2 - 5), cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5, (255, 0, 0), 1, cv2.LINE_AA)
+
+    # Display the image
+    plt.figure(figsize=(10, 6))
+    plt.imshow(image_rgb)
+    plt.title("Scale Bar and Thorax Positions")
+    plt.axis("off")
+    plt.show()
+
+    
+def produce_heatmap(model, img_path, file_name):
+    from ultralytics.solutions import heatmap
+
+    im0 = cv2.imread(img_path)   # path to image file
+
+    # Heatmap Init
+    heatmap_obj = heatmap.Heatmap(colormap=cv2.COLORMAP_JET,
+                        imw=im0.shape[0],  # should same as im0 width
+                        imh=im0.shape[1],  # should same as im0 height
+                        view_img=True)
+
+    results = model.track(im0, persist=True)
+    im0 = heatmap_obj.generate_heatmap(im0)
+    base_dir = os.getcwd()
+    os.makedirs(os.path.join(base_dir, 'heatmaps'), exist_ok=True)
+    cv2.imwrite(f"{file_name}.jpg", im0)
+    print("File saved inside heatmaps folder")
+    

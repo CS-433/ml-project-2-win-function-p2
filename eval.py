@@ -81,7 +81,7 @@ def visualize_predictions(image_path, results, save_dir='./predicted'):
 
 if __name__ == '__main__':
     
-    model = YOLO('./runs/pose/train/weights/best.pt')
+    model = YOLO('./best.pt')
     image_path = './original/antweb1008008_p_1.jpg'
     results = model.predict(source=image_path)
     output_path = visualize_predictions(image_path, results)
