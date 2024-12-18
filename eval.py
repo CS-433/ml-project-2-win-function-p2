@@ -64,7 +64,7 @@ def visualize_predictions(image_path, results, save_dir='./predicted'):
             #         pt2 = tuple(map(int, det_kpts[link[1]][:2]))
             #         draw.line([pt1, pt2], fill="white", width=1)
     
-    # Create save directory if it doesn't exist
+    # Create the save directory if it doesn't exist
     os.makedirs(save_dir, exist_ok=True)
     
     # Generate output filename
