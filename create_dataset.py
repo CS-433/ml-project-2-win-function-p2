@@ -193,9 +193,18 @@ def create_thorax_and_scale_dataset(csv_path, image_folder, image_dim):
         y2_bar_normalized = normalize(y2_bar, image_dim)
         
         # Save annotation
-        #<class-index> <x> <y> <width> <height> <px1> <py1> <px2> <py2> ... <pxn> <pyn>
-        annotation_lmk = f"0 {x_lmk_center} {y_lmk_center} {width_lmk} {height_lmk} {x1_normalized} {y1_normalized} {x2_normalized} {y2_normalized} 0 0 0 0\n"  # Assuming class id 0
-        annotation_bar = f"1 {x_bar_center} {y_bar_center} {width_bar} {height_bar} {x1_bar_normalized} {y1_bar_normalized} {x2_bar_normalized} {y2_bar_normalized} 0 0 0 0\n" 
+        """
+        to add a new class to the dataset, add a new line with the following format:
+           <class-index> <x> <y> <width> <height> <px1> <py1> <px2> <py2> ... <pxn> <pyn>
+        where:
+            - <class-index> is the class index (0-indexed)
+            - <x> <y> <width> <height> are the bounding box coordinates
+            - <pxi> <pyi> are the normalized coordinates of the i-th keypoint
+        """
+        
+        
+        annotation_lmk = f"0 {x_lmk_center} {y_lmk_center} {width_lmk} {height_lmk} {x1_normalized} {y1_normalized} {x2_normalized} {y2_normalized}\n"
+        annotation_bar = f"1 {x_bar_center} {y_bar_center} {width_bar} {height_bar} {x1_bar_normalized} {y1_bar_normalized} {x2_bar_normalized} {y2_bar_normalized}\n"
         annotation = [annotation_lmk, annotation_bar]
 
         annotations.append((img_name, annotation))
@@ -252,8 +261,8 @@ def create_thorax_and_scale_dataset(csv_path, image_folder, image_dim):
         f.write('nc: 2\n')
         f.write('names: ["thorax", "bar"]\n')
         f.write('keypoint_names: ["thorax_p1", "thorax_p2", "bar_p1", "bar_p2"]\n')
-        f.write('num_keypoints: 4\n')
-        f.write('kpt_shape: [4, 2]\n')
+        f.write('num_keypoints: 2\n') # 2 keypoints for each class
+        f.write('kpt_shape: [2, 2]\n') # 2D keypoints
     
     print(f"Created dataset.yaml at: {yaml_path}")
     print("Data preparation complete.")
@@ -307,7 +316,11 @@ def create_scale_dataset(csv_path, image_folder, image_dim):
         y1_normalized = normalize(y1, image_dim)
         x2_normalized = normalize(x2, image_dim)
         y2_normalized = normalize(y2, image_dim)
-
+        # if width or height is 0 add a small value to avoid division by zero
+        if width == 0:
+            width += 0.001
+        if height == 0:
+            height += 0.001
         # Save annotation
         annotation = f"0 {x_center} {y_center} {width} {height} {x1_normalized} {y1_normalized} {x2_normalized} {y2_normalized}\n"  # Assuming class id 0
         annotations.append((img_name, annotation))
@@ -370,11 +383,11 @@ def create_scale_dataset(csv_path, image_folder, image_dim):
     
 
 if __name__ == '__main__':
-    csv_path = './csv/landmark_digitalization_3.csv' #'./csv/new_annotations.csv'
+    csv_path = './csv/landmark_digitalization_3.csv' ##'./csv/new_annotations.csv' #'/mnt/lts4/scratch/home/abdelrah/ml_project_2/csv/vivien.csv'#
     image_folder = './original' # "../../original"
     image_dim = 640
     
-    # create_thorax_dataset(csv_path, image_folder, image_dim)
+    # creates_thorax_dataset(csv_path, image_folder, image_dim)
     create_thorax_and_scale_dataset(csv_path, image_folder, image_dim)
     # create_scale_dataset(csv_path, image_folder, image_dim)
     
