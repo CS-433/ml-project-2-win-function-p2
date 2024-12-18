@@ -4,7 +4,6 @@ import numpy as np
 from PIL import Image
 from sklearn.model_selection import train_test_split
 
-
 #train
 def move_files(files, base_dir, base_folder="thorax_dataset", data_category="train"):
     for img_name, annotation in files:
@@ -45,7 +44,7 @@ def normalize(x, dim):
 def create_thorax_dataset(csv_path, image_folder, image_dim):
     # Load the CSV file
     
-    data = pd.read_csv(csv_path).drop_duplicates().dropna()
+    data = pd.read_csv(csv_path).drop_duplicates()
     base_folder="thorax_dataset"
 
     # Create directories

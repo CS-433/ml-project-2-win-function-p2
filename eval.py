@@ -2,7 +2,6 @@ import os
 from ultralytics import YOLO
 from PIL import Image, ImageDraw
 
-
 def visualize_predictions(image_path, results, save_dir='./predicted'):
     # Load the image using PIL
     image = Image.open(image_path)
@@ -78,9 +77,7 @@ def visualize_predictions(image_path, results, save_dir='./predicted'):
     
     return output_path
 
-
 if __name__ == '__main__':
-    
     model = YOLO('./best.pt')
     image_path = './original/antweb1008008_p_1.jpg'
     results = model.predict(source=image_path)

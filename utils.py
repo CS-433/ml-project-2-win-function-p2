@@ -233,7 +233,7 @@ import numpy as np
 def detect_black_scale_bar(image_path):
     """
     Assuming the image has dimension 640x640
-    Detects the scale bar in an image, assuming it is a black, straight line,
+    The function detects the scale bar in an image, assuming it is a black, straight line,
     located at the bottom between pixel rows 550 and 640.
 
     Parameters:
