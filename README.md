@@ -46,6 +46,8 @@ The Weber's length, a key morphological measurement of ants, can be extracted by
 
 ## **Workflow**
 
+Go to step 3 if you want to test our model (best.pt)
+
 1. **Scale Bar Detection**:  
    Run `scale_bar_detection.ipynb` to detect and get the positions of the start and end of the scale bar.
 
@@ -70,6 +72,9 @@ The Weber's length, a key morphological measurement of ants, can be extracted by
 - NumPy
 - Pandas
 - Matplotlib
+
+- Make sure thorax_only.csv and the image folder "ants" are inside the project's folder
+- Add our model weights (best.pt) to the folder to test our finetuned model. 
 
 Install dependencies using:
 `pip install -r requirements.txt`
