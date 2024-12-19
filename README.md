@@ -74,7 +74,7 @@ Go to step 3 if you want to test our model (best.pt)
 - Matplotlib
 
 - Make sure thorax_only.csv and the image folder "ants" are inside the project's folder
-- Add our model weights (best.pt) to the folder to test our finetuned model. 
+- Add our model weights (.pt file) to the folder to test our finetuned model. 
 
 Install dependencies using:
 `pip install -r requirements.txt`
