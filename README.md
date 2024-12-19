@@ -53,7 +53,7 @@ The Weber's length, a key morphological measurement of ants, can be extracted by
 Go to step 3 if you want to test our model (.pt)
 
 1. **Scale Bar Detection**:  
-   Run `scale_bar_detection.ipynb` to detect and get the positions of the start and end of the scale bar.
+   Run `scale_bar_detection.ipynb` (or using deepLSD) to detect and get the positions of the start and end of the scale bar.
 
 2. **Model Training**:  
    Run `finetuning.ipynb` to prepare the dataset and fine-tune the YOLOv11 model and save the best weights.
