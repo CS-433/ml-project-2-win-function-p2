@@ -43,7 +43,7 @@ The Weber's length, a key morphological measurement of ants, can be extracted by
    - Implements text detection (e.g., scale labels) from input images using  easyOCR.
 
 - **`DeepLSD_scale_bar_detection.ipynb`**  
-   - Implements scale bar detection using the DeepLSD project. (Make sure that the directory of DeepLSD is installed in the project folder and that the pre-trained DeepLSD weights, deeplsd_md.tar, are inside the project's folder)
+   - Implements scale bar detection using the DeepLSD project. (Make sure that the directory of DeepLSD is installed in the project folder and that the pre-trained DeepLSD weights, deeplsd_md.tar, are inside the project's folder). https://github.com/cvg/DeepLSD
 
 
 ---
