@@ -25,7 +25,7 @@ The Weber's length, a key morphological measurement of ants, can be extracted by
 
 ### **3. Configuration File**
 - **`hyp.yaml`**  
-   - Hyperparameter configuration file for YOLOv11 fine-tuning, specifying learning rates, epochs, and anchor box settings.
+   - Hyperparameter configuration file for YOLOv11 fine-tuning, specifying learning rates, epochs, etc ...
 
 ### **4. Jupyter Notebooks**
 - **`main_exp.ipynb`**  
@@ -64,7 +64,7 @@ The Weber's length, a key morphological measurement of ants, can be extracted by
 
 - Python >= 3.8
 - PyTorch >= 1.10
-- YOLOv11 (custom implementation or pre-trained)
+- ultralytics
 - OpenCV
 - easyocr
 - NumPy

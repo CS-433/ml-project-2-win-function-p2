@@ -401,6 +401,8 @@ def resize_image(img_path, img_name):
     image_dim = 640
     resized_img = img.resize((image_dim, image_dim), Image.Resampling.LANCZOS)
     # Save the resized image
+    base_dir = os.getcwd()
+    os.makedirs(os.path.join(base_dir, 'resized_images'), exist_ok=True)
     resized_img_path = os.path.join('./resized_images', img_name)
     resized_img.save(resized_img_path)
     return resized_img_path
