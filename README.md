@@ -21,7 +21,7 @@ The Weber's length, a key morphological measurement of ants, can be extracted by
    - Handles annotation formatting and data splitting into training, validation, and test sets.
 
 - **`utils.py`**  
-   - Provides utility functions used across the project, data visualization functions and .
+   - Provides utility functions used across the project, data visualization tools, scale bar detection function, etc ...
 
 ### **3. Configuration File**
 - **`hyp.yaml`**  
