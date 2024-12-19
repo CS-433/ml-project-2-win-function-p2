@@ -78,3 +78,8 @@ Go to step 3 if you want to test our model (best.pt)
 
 Install dependencies using:
 `pip install -r requirements.txt`
+
+## Reproducibility
+
+We provide a drive with checkpoints for all our trained YOLO models, as well as our dataset splits (train\val\test)
+`https://drive.google.com/drive/folders/1ElyO_maC5C08JpuWhXqTZu9ZBB9VzCWa?usp=sharing`
