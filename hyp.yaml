@@ -1,0 +1,23 @@
+# hyp.yaml
+lr0: 0.01  # Initial learning rate
+lrf: 0.2   # Final learning rate
+momentum: 0.937  # SGD momentum
+weight_decay: 0.0005  # optimizer weight decay
+warmup_epochs: 3.0  # warmup epochs
+warmup_momentum: 0.8  # warmup initial momentum
+warmup_bias_lr: 0.1  # warmup initial bias lr
+
+# Augmentation hyperparameters
+degrees: 10.0        # Rotation (+/- degrees)
+translate: 0.1       # Translation (+/- fraction)
+scale: 0.5           # Scale (+/- gain)
+shear: 2.0           # Shear (+/- degrees)
+perspective: 0.0     # Perspective (+/- fraction), 0 for pose estimation
+hsv_h: 0.015         # HSV-Hue augmentation (fraction)
+hsv_s: 0.7           # HSV-Saturation augmentation (fraction)
+hsv_v: 0.4           # HSV-Value augmentation (fraction)
+flipud: 0.0          # Vertical flip (probability)
+fliplr: 0.5          # Horizontal flip (probability)
+mosaic: 1.0          # Mosaic augmentation (probability)
+mixup: 0.2           # Mixup augmentation (probability)
+copy_paste: 0.0      # Copy-paste augmentation (pose-specific: typically 0)

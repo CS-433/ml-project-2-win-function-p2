@@ -4,8 +4,17 @@ import numpy as np
 from PIL import Image
 from sklearn.model_selection import train_test_split
 
-#train
-def move_files(files, base_dir, base_folder="thorax_dataset", data_category="train"):
+def move_files(files, base_folder="thorax_dataset", data_category="train"):
+    """
+    move_files will move the image files from base_folder to the
+    base_folder/data_category
+
+    Args:
+        files (list): list of tuples containing the image file name and the annotations
+        base_folder (str, optional): directory of the dataset that will be used for training. Defaults to "thorax_dataset".
+        data_category (str, optional): the category of the dataset can be either train, val or test. Defaults to "train".
+    """
+    base_dir = os.getcwd()
     for img_name, annotation in files:
         base_name = os.path.splitext(img_name)[0]
 
@@ -17,6 +26,8 @@ def move_files(files, base_dir, base_folder="thorax_dataset", data_category="tra
         
         label_path = os.path.join(base_dir, f'{base_folder}/labels/{data_category}', f'{base_name}.txt')
         with open(label_path, 'w') as f:
+            # annotation[0] contains the thorax annotation
+            # annotation[1] contains the scale bar annotation 
             if(type(annotation) is list):
                 f.write(annotation[0])
                 f.write(annotation[1])
@@ -25,6 +36,23 @@ def move_files(files, base_dir, base_folder="thorax_dataset", data_category="tra
 
 # Function to normalize YOLO annotations
 def normalize_yolo(x1, y1, x2, y2, img_width, img_height, x1_bar=None, y1_bar=None, x2_bar=None, y2_bar=None):
+    """_summary_
+
+    Args:
+        x1 (float): x position of the start of the thorax
+        y1 (float): y position of the start of the thorax 
+        x2 (float): x position of the end of the thorax 
+        y2 (float): y position of the end of the thorax 
+        img_width (float): width of the image
+        img_height (float): height of the image
+        x1_bar (float, optional): x position of the start of the scale bar. Defaults to None.
+        y1_bar (float, optional): y position of the start of the scale bar. Defaults to None.
+        x2_bar (float, optional): x position of the end of the scale bar. Defaults to None.
+        y2_bar (float, optional): y position of the end of the scale bar. Defaults to None.
+
+    Returns:
+        tuple: a specification of a box containing the thorax of an ant
+    """
     x_lmk_center = (x1 + x2) / 2 / img_width
     y_lmk_center = (y1 + y2) / 2 / img_height
     width_lmk = abs(x2 - x1) / img_width
@@ -42,6 +70,13 @@ def normalize(x, dim):
     return x/dim
     
 def create_thorax_dataset(csv_path, image_folder, image_dim):
+    """This function will create a new folder containing a dataset adapted for Yolov11, with only the thorax.
+
+    Args:
+        csv_path (str): path to the annotation file
+        image_folder (str): path to the folder containing all the images
+        image_dim (int): dimension of the (to be) resized image
+    """
     # Load the CSV file
     
     data = pd.read_csv(csv_path).drop_duplicates()
@@ -120,6 +155,14 @@ def create_thorax_dataset(csv_path, image_folder, image_dim):
     print("Data preparation complete.")
     
 def create_thorax_and_scale_dataset(csv_path, image_folder, image_dim):
+    """This function will create a new folder containing a dataset adapted for Yolov11, with both the scale bar and thorax.
+
+    Args:
+        csv_path (str): path to the annotation file
+        image_folder (str): path to the folder containing all the images
+        image_dim (int): dimension of the (to be) resized image
+    """
+    
     # Load the CSV file
     
     data = pd.read_csv(csv_path).drop_duplicates().dropna()
@@ -219,6 +262,14 @@ def create_thorax_and_scale_dataset(csv_path, image_folder, image_dim):
     
     
 def create_scale_dataset(csv_path, image_folder, image_dim):
+    """This function will create a new folder containing a dataset adapted for Yolov11, with only the scale bar.
+
+    Args:
+        csv_path (str): path to the annotation file
+        image_folder (str): path to the folder containing all the images
+        image_dim (int): dimension of the (to be) resized image
+    """
+    
     # Load the CSV file
     
     data = pd.read_csv(csv_path).drop_duplicates().dropna()
@@ -309,7 +360,7 @@ if __name__ == '__main__':
     image_folder =  r'C:\Users\elyes\Documents\UNIL ants\EPFL\original' # "../../original"
     image_dim = 640
     
-    # creates_thorax_dataset(csv_path, image_folder, image_dim)
+    # create_thorax_dataset(csv_path, image_folder, image_dim)
     create_thorax_and_scale_dataset(csv_path, image_folder, image_dim)
     # create_scale_dataset(csv_path, image_folder, image_dim)
     
