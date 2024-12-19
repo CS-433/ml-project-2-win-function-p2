@@ -71,7 +71,7 @@ The Weber's length, a key morphological measurement of ants, can be extracted by
 - Pandas
 - Matplotlib
 
-Make sure thorax_only.csv is inside the project's folder
+Make sure thorax_only.csv and the image folder "ants" are inside the project's folder
 
 Install dependencies using:
 `pip install -r requirements.txt`
