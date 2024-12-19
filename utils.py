@@ -451,31 +451,42 @@ def process_images_from_csv(input_csv, output_csv, images_folder):
     df.to_csv(output_csv, index=False)
     print(f"Results saved to {output_csv} \n Number of images with undetected scale bars: {count}")
 
-
-def produce_heatmap(model, img_path, file_name):
-    """this will display a heatmap of the predicted image
+def produce_heatmap(model_file, img_path, file_name, view_img=False):
+    """
+    This function generates and saves a heatmap of the predicted image.
 
     Args:
-        model (YOLO): yolo model
-        img_path (str): path to the image to predict (ex: ./original/ant.jpg)
-        file_name (str): name of the image (ex: ant.jpg)
+        model (YOLO): YOLO model instance.
+        img_path (str): Path to the image to predict (e.g., ./original/ant.jpg).
+        file_name (str): Name of the output heatmap image file (e.g., ant.jpg).
     """
     from ultralytics.solutions import heatmap
 
-    im0 = cv2.imread(img_path)   # path to image file
+    # Read the image
+    im0 = cv2.imread(img_path)  # Read the image from the given path
 
-    # Heatmap Init
-    heatmap_obj = heatmap.Heatmap(colormap=cv2.COLORMAP_JET,
-                        imw=im0.shape[0],  # should same as im0 width
-                        imh=im0.shape[1],  # should same as im0 height
-                        view_img=True)
+    # Initialize the heatmap generator
+    heatmap_obj = heatmap.Heatmap(
+        colormap=cv2.COLORMAP_JET,
+        imw=im0.shape[1],  # Image width (Note: Use shape[1] for width)
+        imh=im0.shape[0],  # Image height (Note: Use shape[0] for height)
+        model=model_file,
+        view_img=view_img     # Set to True if you want to display the heatmap
+    )
 
-    results = model.track(im0, persist=True)
+    # Generate the heatmap
     im0 = heatmap_obj.generate_heatmap(im0)
+
+    # Create the heatmaps directory if it doesn't exist
     base_dir = os.getcwd()
-    os.makedirs(os.path.join(base_dir, 'heatmaps'), exist_ok=True)
-    cv2.imwrite(f"{file_name}.jpg", im0)
-    print("File saved inside heatmaps folder")
+    heatmap_dir = os.path.join(base_dir, 'heatmaps')
+    os.makedirs(heatmap_dir, exist_ok=True)
+
+    # Save the heatmap image to the heatmaps folder
+    heatmap_path = os.path.join(heatmap_dir, file_name)
+    cv2.imwrite(heatmap_path, im0)
+    
+    print(f"Heatmap saved at: {heatmap_path}")
 
 def detect_text(path_folder_image, file_name, path_directory_save, n_split, overlap, scaling_factor):
     import easyocr
