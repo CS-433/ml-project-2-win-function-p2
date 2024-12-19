@@ -6,7 +6,6 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import easyocr
 
 def choose_random_file(directory, to_skip=set([])):
     """chooses a random file from a directory.
@@ -477,6 +476,8 @@ def produce_heatmap(model, img_path, file_name):
     print("File saved inside heatmaps folder")
 
 def detect_text(path_folder_image, file_name, path_directory_save, n_split, overlap, scaling_factor):
+    import easyocr
+    
     """ Find text in the image using EasyOCR pre-tained model.
         The image is split into smaller patches to increase detection speed
     

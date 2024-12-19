@@ -135,9 +135,9 @@ def create_thorax_dataset(csv_path, image_folder, image_dim):
     
     # Move images and create labels
     #train
-    move_files(train_files, base_dir, base_folder=base_folder, data_category="train")
-    move_files(val_files, base_dir, base_folder=base_folder, data_category="val")
-    move_files(test_files, base_dir, base_folder=base_folder, data_category="test")
+    move_files(train_files, base_folder=base_folder, data_category="train")
+    move_files(val_files, base_folder=base_folder, data_category="val")
+    move_files(test_files, base_folder=base_folder, data_category="test")
             
     #create the asscoiated .yaml file for YOLO with correct train/val/test directories
     yaml_path = os.path.join(base_dir, f'{base_folder}/dataset.yaml')
@@ -241,9 +241,9 @@ def create_thorax_and_scale_dataset(csv_path, image_folder, image_dim):
     val_files, test_files = train_test_split(val_test_files, test_size=0.5, random_state=42)
   
     # Move images and create labels
-    move_files(train_files, base_dir, base_folder=base_folder, data_category="train")
-    move_files(val_files, base_dir, base_folder=base_folder, data_category="val")
-    move_files(test_files, base_dir, base_folder=base_folder, data_category="test")
+    move_files(train_files, base_folder=base_folder, data_category="train")
+    move_files(val_files, base_folder=base_folder, data_category="val")
+    move_files(test_files, base_folder=base_folder, data_category="test")
 
     #create the asscoiated .yaml file for YOLO with correct train/val/test directories
     yaml_path = os.path.join(base_dir, f'{base_folder}/dataset.yaml')
@@ -335,9 +335,9 @@ def create_scale_dataset(csv_path, image_folder, image_dim):
     # Move images and create labels
     #train 
 
-    move_files(train_files, base_dir, base_folder=base_folder, data_category="train")
-    move_files(val_files, base_dir, base_folder=base_folder, data_category="val")
-    move_files(test_files, base_dir, base_folder=base_folder, data_category="test")
+    move_files(train_files, base_folder=base_folder, data_category="train")
+    move_files(val_files, base_folder=base_folder, data_category="val")
+    move_files(test_files, base_folder=base_folder, data_category="test")
             
     #create the asscoiated .yaml file for YOLO with correct train/val/test directories
     yaml_path = os.path.join(base_dir, 'scale_dataset/dataset.yaml')
