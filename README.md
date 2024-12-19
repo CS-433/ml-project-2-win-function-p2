@@ -42,6 +42,9 @@ The Weber's length, a key morphological measurement of ants, can be extracted by
 - **`text_detection.ipynb`**  
    - Implements text detection (e.g., scale labels) from input images using  easyOCR.
 
+- **`DeepLSD_scale_bar_detection.ipynb`**
+   - 
+
 ---
 
 ## **Workflow**
